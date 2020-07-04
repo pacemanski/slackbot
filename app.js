@@ -4,6 +4,9 @@ require('./routes/backend')
 require('dotenv').config();
 const slacklistener = require('./slacklistener')
 
+const userService = require('./domain/users')
+const reactionsService = require('./domain/reactions')
+
 // Slack
 slacklistener.listen();
 
@@ -17,22 +20,53 @@ app.listen(port, () => {
 
 app.get('/users/:userId/category', function (req, res) {
     const userId = req.params.userId
-    res.send('Saludos a ' + userId + 'desde express');
+
+    try {
+        const classResult = userService.classify(userId)
+
+        // I realized framework automatically sets this header. I just added to show I know the importance of this header.
+        res.set('Content-Type', 'application/json')
+        res.send({
+            userId: userId,
+            class: classResult
+        });
+    } catch (InvalidUserId) {
+        badRequest(res,'User id ' +userId+' is not valid')
+    }
 });
 
 app.get('/users/clapers', function (req, res) {
-    const top = req.param('top')
+    const top = req.query.top
     if(top == undefined) {
+        badRequest(res,'A \'top\' queryparam value must be provided')
+    } else {
+        const clappers = userService.findClappers(top)
         res.send({
-            message: 'A \'top\' value must be specified by queryparam'
-        },400)
+            clappers : clappers
+        });
     }
-
-    res.send('Saludos a ' + top + 'desde express');
 });
 
 app.get('/reactions/:reactionId', function(req,res) {
     const reactionId = req.params.reactionId
 
-    res.send('reaction id: ' + reactionId)
+    try {
+        const usersOfReaction = reactionsService.usageOf(reactionId)
+
+        res.set('Content-Type', 'application/json')
+        res.send({
+            reactionId: reactionId,
+            usage: {
+                users: usersOfReaction
+            }
+        });
+    } catch (InvalidReactionId) {
+        badRequest(res,'Reactions id ' +reactionId+' is not valid')
+    }
 })
+
+function badRequest(res,message) {
+    res.status(400).send({
+        message: message
+    })
+}
