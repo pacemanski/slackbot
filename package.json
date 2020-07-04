@@ -1,0 +1,17 @@
+{
+  "name": "slackbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pacemanski/slackbot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pacemanski/slackbot/issues"
+  },
+  "homepage": "https://github.com/pacemanski/slackbot#readme"
+}
