@@ -1,10 +1,12 @@
 const http = require('http');
 require('dotenv').config();
 
+const slacklistener = require('./slacklistener')
+
 const hostname = '127.0.0.1';
 const port = 3000;
 
-const SLACK_TOKEN = process.env.SLACK_BOT_TOKEN;
+slacklistener.listen();
 
 const server = http.createServer((req, res) => {
     res.statusCode = 200;
