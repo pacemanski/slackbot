@@ -1,19 +1,38 @@
-const http = require('http');
+// Requires
+const express = require('express');
+require('./routes/backend')
 require('dotenv').config();
-
 const slacklistener = require('./slacklistener')
 
-const hostname = '127.0.0.1';
-const port = 3000;
-
+// Slack
 slacklistener.listen();
 
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Alter Bridge rocckss! ' + SLACK_TOKEN);
+// Web Server
+const port = 3000;
+
+const app = express();
+app.listen(port, () => {
+    console.log("El servidor está inicializado en el puerto 3000 \m/");
 });
 
-server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+app.get('/users/:userId/category', function (req, res) {
+    const userId = req.params.userId
+    res.send('Saludos a ' + userId + 'desde express');
 });
+
+app.get('/users/clapers', function (req, res) {
+    const top = req.param('top')
+    if(top == undefined) {
+        res.send({
+            message: 'A \'top\' value must be specified by queryparam'
+        },400)
+    }
+
+    res.send('Saludos a ' + top + 'desde express');
+});
+
+app.get('/reactions/:reactionId', function(req,res) {
+    const reactionId = req.params.reactionId
+
+    res.send('reaction id: ' + reactionId)
+})
