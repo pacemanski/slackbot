@@ -95,29 +95,17 @@ class UserService {
 
     findClappers(top) {
         return dao.getAll()
-            .filter(function (a) {
-                return reactionsService.numberOfClaps(a) != 0
+            .filter(function (user) {
+                return reactionsService.numberOfClaps(user) != 0
             })
-            .sort(function(a,b) {
-                if(reactionsService.numberOfClaps(a) > reactionsService.numberOfClaps(b)) {
+            .sort(function(userA,userB) {
+                if(reactionsService.numberOfClaps(userA) > reactionsService.numberOfClaps(userB)) {
                     return -1;
                 } else {
                     return 1;
                 }
             })
             .slice(0,top)
-    }
-
-    findClappers2(top) {
-        return [
-            {
-                userId:70,
-                times:15
-            },
-            {
-                userId: 80,
-                times: 10
-            }]
     }
 
     classify(userId) {

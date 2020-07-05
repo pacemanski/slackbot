@@ -1,3 +1,5 @@
+const usersDao = require('./persistence/users_dao');
+const dao = require('./persistence/reactions_dao');
 
 class InvalidReactionId extends Error {
     constructor(id){
@@ -6,6 +8,15 @@ class InvalidReactionId extends Error {
 }
 
 class ReactionsService {
+
+    simulateCreationForTesting() {
+        this.onNewReaction(this.plusOneReactionId())
+        this.onNewReaction(this.clapReactionId())
+    }
+
+    onNewReaction(reactionId) {
+        dao.save({reactionId:reactionId})
+    }
 
     plusOneReactionId() {
         return ":+1:"
@@ -16,7 +27,11 @@ class ReactionsService {
     }
 
     numberOfClaps(user) {
-        let claps = user.activity.reactions[this.clapReactionId()]
+        return this.numberOfReactions(user,this.clapReactionId())
+    }
+
+    numberOfReactions(user,reactionId) {
+        let claps = user.activity.reactions[reactionId]
         if(claps == undefined) {
             return 0;
         } else {
@@ -25,10 +40,18 @@ class ReactionsService {
     }
 
     usageOf(reactionId) {
-        if(reactionId == 3) {
+        if(dao.get(reactionId) == undefined) {
             throw new InvalidReactionId(reactionId)
         }
-        return ["12","15","20"]
+        let self = this
+        return usersDao.getAll().filter(function (user) {
+                    return self.numberOfReactions(user,reactionId) > 0
+                }).map(function (user) {
+                    return {
+                        userId: user.userId,
+                        times: self.numberOfReactions(user,reactionId)
+                    }
+                })
     }
 
 }

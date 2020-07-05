@@ -14,6 +14,7 @@ slacklistener.listen();
 const port = 3000;
 
 userService.simulateEventsForTesting()
+reactionsService.simulateCreationForTesting()
 
 const app = express();
 app.listen(port, () => {
@@ -63,9 +64,7 @@ app.get('/reactions/:reactionId', function(req,res) {
         res.set('Content-Type', 'application/json')
         res.send({
             reactionId: reactionId,
-            usage: {
-                users: usersOfReaction
-            }
+            usage: usersOfReaction
         });
     } catch (InvalidReactionId) {
         badRequest(res,'Reactions id ' +reactionId+' is not valid')
