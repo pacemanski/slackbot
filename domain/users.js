@@ -40,9 +40,11 @@ class UserService {
 
         this.onReaction(10, reactionsService.clapReactionId())
         this.onReaction(10, reactionsService.clapReactionId())
-        this.onReaction(10, reactionsService.clapReactionId())
         this.onReaction(15, reactionsService.clapReactionId())
         this.onReaction(15, reactionsService.clapReactionId())
+        this.onReaction(15, reactionsService.clapReactionId())
+        this.onReaction(20, reactionsService.clapReactionId())
+        this.onReaction(20, reactionsService.clapReactionId())
         this.onReaction(20, reactionsService.clapReactionId())
         this.onReaction(20, reactionsService.clapReactionId())
     }
@@ -92,13 +94,18 @@ class UserService {
     }
 
     findClappers(top) {
-        dao.getAll().sort(function(a,b) {
-            if(reactionsService.numberOfClaps(a) > reactionsService.numberOfClaps(b)) {
-                return -1;
-            } else {
-                return 1;
-            }
-        }).slice(0,top-1)
+        return dao.getAll()
+            .filter(function (a) {
+                return reactionsService.numberOfClaps(a) != 0
+            })
+            .sort(function(a,b) {
+                if(reactionsService.numberOfClaps(a) > reactionsService.numberOfClaps(b)) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            })
+            .slice(0,top)
     }
 
     findClappers2(top) {

@@ -44,7 +44,12 @@ app.get('/users/clapers', function (req, res) {
     } else {
         const clappers = userService.findClappers(top)
         res.send({
-            clappers : clappers
+            clappers : clappers.map( user => {
+                return {
+                    userId:user.userId,
+                    times:user.activity.reactions[reactionsService.clapReactionId()]
+                }
+            })
         });
     }
 });
