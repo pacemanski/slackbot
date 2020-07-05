@@ -17,6 +17,15 @@ setUpWebServer(3000)
 
 function setUpWebServer(port) {
     const app = express();
+
+    app.use(function (req,res,next) {
+        // I needed this in order to deactivate CORS for the UI. I would explore for a beter solution if I have had
+        // more time.
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Content-Type', 'application/json')
+        next()
+    })
+
     setUpControllers(app)
 
     app.listen(port, () => {
@@ -31,8 +40,6 @@ function setUpControllers(app) {
         try {
             const classResult = userService.classify(userId)
 
-            // I realized framework automatically sets this header. I just added to show I know the importance of this header.
-            res.set('Content-Type', 'application/json')
             res.send({
                 userId: userId,
                 class: classResult
@@ -64,8 +71,6 @@ function setUpControllers(app) {
 
         let usersOfReaction = reactionsService.usageOf(reactionId)
 
-        // I realized framework automatically sets this header. I just added to show I know the importance of this header.
-        res.set('Content-Type', 'application/json')
         res.send({
             reactionId: reactionId,
             usage: usersOfReaction
