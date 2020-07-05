@@ -2,7 +2,7 @@
 const express = require('express');
 require('./routes/backend')
 require('dotenv').config();
-const slacklistener = require('./slacklistener')
+const slacklistener = require('./domain/slack/listener')
 
 const userService = require('./domain/users')
 const reactionsService = require('./domain/reactions')
@@ -12,6 +12,8 @@ slacklistener.listen();
 
 // Web Server
 const port = 3000;
+
+userService.simulateEventsForTesting()
 
 const app = express();
 app.listen(port, () => {
