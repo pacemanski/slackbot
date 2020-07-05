@@ -1,22 +1,6 @@
 const usersDao = require('./persistence/users_dao');
-const dao = require('./persistence/reactions_dao');
-
-class InvalidReactionId extends Error {
-    constructor(id){
-        super('Invalid reaction id: ' + id);
-    }
-}
 
 class ReactionsService {
-
-    simulateCreationForTesting() {
-        this.onNewReaction(this.plusOneReactionId())
-        this.onNewReaction(this.clapReactionId())
-    }
-
-    onNewReaction(reactionId) {
-        dao.save({reactionId:reactionId})
-    }
 
     plusOneReactionId() {
         return ":+1:"
@@ -40,9 +24,6 @@ class ReactionsService {
     }
 
     usageOf(reactionId) {
-        if(dao.get(reactionId) == undefined) {
-            throw new InvalidReactionId(reactionId)
-        }
         let self = this
         return usersDao.getAll().filter(function (user) {
                     return self.numberOfReactions(user,reactionId) > 0

@@ -9,69 +9,22 @@ class InvalidUserId extends Error {
 
 class UserService {
 
-    // As Slack connection is not working
-    simulateEventsForTesting() {
-        this.onNewUser(10)
-        this.onNewUser(15)
-        this.onNewUser(20)
-        this.onNewUser(25)
-
-        for (let i =0; i <= 11; i++) {
-            this.onChannelCall(10)
+    getUser(userId) {
+        let user = dao.get(userId)
+        if(user == undefined) {
+            throw new InvalidUserId(userId)
         }
-
-        var longMessage = ''
-        for (let i =0; i <= 520; i++) {
-            longMessage = longMessage + ' DO'
-        }
-        this.onMessageSent(15,longMessage)
-        this.onMessageSent(15,longMessage)
-        this.onMessageSent(15,longMessage)
-        this.onMessageSent(15,longMessage)
-
-        this.onMessageSent(20,'just three words')
-        this.onMessageSent(20,'just three words')
-        this.onMessageSent(20,'just three words')
-        this.onMessageSent(20,'just three words')
-
-        for (let i =0; i <= 22; i++) {
-            this.onReaction(20,reactionsService.plusOneReactionId())
-        }
-
-        this.onReaction(10, reactionsService.clapReactionId())
-        this.onReaction(10, reactionsService.clapReactionId())
-        this.onReaction(15, reactionsService.clapReactionId())
-        this.onReaction(15, reactionsService.clapReactionId())
-        this.onReaction(15, reactionsService.clapReactionId())
-        this.onReaction(20, reactionsService.clapReactionId())
-        this.onReaction(20, reactionsService.clapReactionId())
-        this.onReaction(20, reactionsService.clapReactionId())
-        this.onReaction(20, reactionsService.clapReactionId())
-    }
-
-    onNewUser(userId) {
-        dao.save(this.createUser(userId))
-    }
-
-    createUser(userId) {
-        return {
-            userId:userId,
-            activity: {
-                wallOfTexts : 0,
-                channelCalls : 0,
-                reactions: {}
-            }
-        }
+        return user
     }
 
     onChannelCall(userId) {
-        let user = this.getUser(userId)
+        let user = this._getAndOrCreate(userId)
         user.activity.channelCalls = user.activity.channelCalls + 1
         dao.update(user)
     }
 
     onReaction(userId,reactionId) {
-        let user = this.getUser(userId)
+        let user = this._getAndOrCreate(userId)
         if(user.activity.reactions[reactionId] == undefined) {
             user.activity.reactions[reactionId] = 1
         } else {
@@ -81,16 +34,11 @@ class UserService {
     }
 
     onMessageSent(userId,message) {
-        if(this.countWords(message) > 500) {
-            let user = this.getUser(userId)
+        if(this._countWords(message) > 500) {
+            let user = this._getAndOrCreate(userId)
             user.activity.wallOfTexts = user.activity.wallOfTexts + 1
             dao.update(user)
         }
-    }
-
-    countWords(string) {
-        const pattern = /[^\s]+(?=\s*)/g
-        return string.match(pattern).length
     }
 
     findClappers(top) {
@@ -122,13 +70,35 @@ class UserService {
         return "JUST_NORMAL_GUY"
     }
 
-    getUser(userId) {
-        var user = dao.get(userId)
+    // --------------------------
+    // PRIVATE METHODS
+
+    _getAndOrCreate(userId) {
+        let user = dao.get(userId)
         if(user == undefined) {
-            throw new InvalidUserId(userId)
+            let newUser = this._createUser(userId)
+            dao.save(newUser)
+            return newUser
         }
         return user
     }
+
+    _createUser(userId) {
+        return {
+            userId:userId,
+            activity: {
+                wallOfTexts : 0,
+                channelCalls : 0,
+                reactions: {}
+            }
+        }
+    }
+
+    _countWords(string) {
+        const pattern = /[^\s]+(?=\s*)/g
+        return string.match(pattern).length
+    }
+
 
 }
 
