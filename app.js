@@ -111,29 +111,38 @@ function startListeningSlack() {
 }
 
 function simulateSlackActivity() {
+    // user 10: makes @channel ten times
     for (let i =0; i <= 11; i++) {
         userService.onChannelCall(10)
     }
 
+    // user 15: makes WallOfText 4 times
     let longMessage = ''
     for (let i =0; i <= 520; i++) {
         longMessage = longMessage + ' DO'
     }
+
+    userService.onMessageSent(15,longMessage)
+    userService.onMessageSent(15,longMessage)
+    userService.onMessageSent(15,longMessage)
+    userService.onMessageSent(15,longMessage)
+
+    // user 20: sends 4 messages shorter than 500 words. Wont be WallOfText
     let shotMessage = 'just three words'
-
-    userService.onMessageSent(15,longMessage)
-    userService.onMessageSent(15,longMessage)
-    userService.onMessageSent(15,longMessage)
-    userService.onMessageSent(15,longMessage)
-
     userService.onMessageSent(20,shotMessage)
     userService.onMessageSent(20,shotMessage)
     userService.onMessageSent(20,shotMessage)
     userService.onMessageSent(20,shotMessage)
 
+    // user 20: Reacts with thumbs up more than 20 times
     for (let i =0; i <= 22; i++) {
         userService.onReaction(20,reactionsService.plusOneReactionId())
     }
+
+    // Users clapping:
+    //      - user 10: 2 times
+    //      - user 15: 3 times
+    //      - user 20: 4 times
 
     userService.onReaction(10, reactionsService.clapReactionId())
     userService.onReaction(10, reactionsService.clapReactionId())
