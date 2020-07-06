@@ -1,6 +1,5 @@
 // Requires
 const express = require('express');
-require('./routes/backend')
 require('dotenv').config();
 
 const userService = require('./domain/users')
